@@ -67,7 +67,7 @@ function Item({ itemId }) {
           : <ItemDetails>
             {
               Object.keys(item).length
-                ? Object.entries(item).map(([key, value]) => <Item key={key} description={key} value={value} />)
+                ? Object.entries(item).map(([key, value]) => <Item key={key} description={key} value={typeof value === "string" ? value : value._id} />)
                 : <ItemDetail><p>There are no details for this item.</p></ItemDetail>
             }
           </ItemDetails>
