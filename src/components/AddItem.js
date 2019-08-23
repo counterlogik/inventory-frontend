@@ -52,16 +52,16 @@ function AddItem() {
       <Formik
         initialValues={{
           description: "",
-          categories: "",
           model: "",
-          link: "",
-          count: 1,
+          categories: [],
+          locations: [],
           spark: 2,
-          locations: "",
-          notes: "",
-          itemValue: 0,
-          tags: "",
-          photo: ""
+          count: 1,
+          monetaryValue: 0,
+          link: "",
+          notes: [],
+          tags: [],
+          image: ''
         }}
         onSubmit={() => {
           // call REST API here
@@ -80,13 +80,6 @@ function AddItem() {
             />
             <ErrorMessage name="description" component="div" />
             <Field
-              name="categories"
-              render={({ field }) => (
-                <ItemField {...field} type="text" placeholder="categories" />
-              )}
-            />
-            <ErrorMessage name="categories" component="div" />
-            <Field
               name="model"
               render={({ field }) => (
                 <ItemField {...field} type="text" placeholder="model" />
@@ -94,19 +87,19 @@ function AddItem() {
             />
             <ErrorMessage name="model" component="div" />
             <Field
-              name="link"
+              name="categories"
               render={({ field }) => (
-                <ItemField {...field} type="url" placeholder="link" />
+                <ItemField {...field} type="text" placeholder="categories" />
               )}
             />
-            <ErrorMessage name="link" component="div" />
+            <ErrorMessage name="categories" component="div" />
             <Field
-              name="count"
+              name="locations"
               render={({ field }) => (
-                <ItemField {...field} type="number" placeholder="count" />
+                <ItemField {...field} type="text" placeholder="locations" />
               )}
             />
-            <ErrorMessage name="count" component="div" />
+            <ErrorMessage name="locations" component="div" />
             <Field
               name="spark"
               render={({ field }) => (
@@ -120,12 +113,26 @@ function AddItem() {
             />
             <ErrorMessage name="spark" component="div" />
             <Field
-              name="locations"
+              name="count"
               render={({ field }) => (
-                <ItemField {...field} type="text" placeholder="locations" />
+                <ItemField {...field} type="number" placeholder="count" />
               )}
             />
-            <ErrorMessage name="locations" component="div" />
+            <ErrorMessage name="count" component="div" />
+            <Field
+              name="monetaryValue"
+              render={({ field }) => (
+                <ItemField {...field} type="number" placeholder="0" />
+              )}
+            />
+            <ErrorMessage name="monetaryValue" component="div" />
+            <Field
+              name="link"
+              render={({ field }) => (
+                <ItemField {...field} type="url" placeholder="link" />
+              )}
+            />
+            <ErrorMessage name="link" component="div" />
             <Field
               name="notes"
               render={({ field }) => (
@@ -139,13 +146,6 @@ function AddItem() {
             />
             <ErrorMessage name="notes" component="div" />
             <Field
-              name="itemValue"
-              render={({ field }) => (
-                <ItemField {...field} type="number" placeholder="0" />
-              )}
-            />
-            <ErrorMessage name="itemValue" component="div" />
-            <Field
               name="tags"
               render={({ field }) => (
                 <ItemField {...field} type="text" placeholder="tags" />
@@ -153,10 +153,10 @@ function AddItem() {
             />
             <ErrorMessage name="tags" component="div" />
             <Field
-              name="photo"
+              name="image"
               render={({ field }) => <ItemField {...field} type="file" />}
             />
-            <ErrorMessage name="photo" component="div" />
+            <ErrorMessage name="image" component="div" />
             <SubmitButton type="submit">add item!</SubmitButton>
           </Form>
         )}
