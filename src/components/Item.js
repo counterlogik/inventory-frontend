@@ -13,13 +13,11 @@ const ItemDetails = styled.ul`
   list-style: none;
   margin: 10px auto;
   padding: 20px;
-  border: 1px dashed darkblue;
 `;
 
 const ItemDetail = styled.li`
   margin-bottom: 10px;
   padding: 10px;
-  border: 1px dashed darkblue;
 
   h6 {
     font-size: 14px;
@@ -50,12 +48,41 @@ function Item({ itemId }) {
     getItem();
   }, [itemId]);
 
-  function Item({ description, value }) {
+  function Details({ id, desc, spark, categories, locations, tags, model, link, notes }) {
     return (
-      <ItemDetail>
-        <h6>{description}</h6>
-        <p>{value}</p>
-      </ItemDetail>
+      <ItemDetails>
+        <ItemDetail>
+          <h6>{desc}</h6>
+        </ItemDetail>
+
+        <ItemDetail>
+          <p>{spark}</p>
+        </ItemDetail>
+
+        <ItemDetail>
+          <p>{categories}</p>
+        </ItemDetail>
+
+        <ItemDetail>
+          <p>{locations}</p>
+        </ItemDetail>
+
+        <ItemDetail>
+          <p>{tags}</p>
+        </ItemDetail>
+
+        <ItemDetail>
+          <p>{model}</p>
+        </ItemDetail>
+
+        <ItemDetail>
+          <p>{link}</p>
+        </ItemDetail>
+
+        <ItemDetail>
+          <p>{notes}</p>
+        </ItemDetail>
+      </ItemDetails>
     );
   }
 
@@ -64,13 +91,19 @@ function Item({ itemId }) {
       {
         hasError
           ? <p>There was an error trying to get the item (id: { itemId }). Please try again later.</p>
-          : <ItemDetails>
-            {
-              Object.keys(item).length
-                ? Object.entries(item).map(([key, value]) => <Item key={key} description={key} value={typeof value === "string" ? value : value._id} />)
-                : <ItemDetail><p>There are no details for this item.</p></ItemDetail>
-            }
-          </ItemDetails>
+          : Object.keys(item).length
+            ? <Details
+                id={ itemId }
+                desc={item.description}
+                spark={item.spark}
+                categories={item.categories}
+                locations={item.locations}
+                tags={item.tags}
+                model={item.model}
+                link={item.link}
+                notes={item.notes}
+              />
+            : <ItemDetail><p>There are no details for this item.</p></ItemDetail>
       }
     </Container>
   );
