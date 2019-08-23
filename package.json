@@ -18,7 +18,14 @@
     "fix-styles": "prettier-stylelint --write 'src/**/*.{css,scss}' "
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "plugins": [
+      "react-hooks"
+    ],
+    "rules": {
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn"
+    }
   },
   "browserslist": {
     "production": [
@@ -33,6 +40,7 @@
     ]
   },
   "devDependencies": {
+    "eslint-plugin-react-hooks": "^2.0.1",
     "prettier-eslint-cli": "^5.0.0",
     "stylelint-config-standard": "^18.3.0"
   },
