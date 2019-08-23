@@ -1,6 +1,8 @@
 import React from "react";
+import { Router, Link } from "@reach/router";
 import styled from "styled-components";
 import AddItem from "./components/AddItem";
+import ItemsList from "./components/ItemsList";
 
 const Container = styled.div`
   text-align: center;
@@ -21,8 +23,19 @@ function App() {
     <Container>
       <Header>
         <h3>inventory</h3>
+        <ul>
+          <li>
+            <Link to="/">items list</Link>
+          </li>
+          <li>
+            <Link to="/add-item">add item</Link>
+          </li>
+        </ul>
       </Header>
-      <AddItem />
+      <Router>
+        <ItemsList path="/" />
+        <AddItem path="/add-item" />
+      </Router>
     </Container>
   );
 }
