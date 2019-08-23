@@ -33,6 +33,18 @@ const ItemTextareaField = styled.textarea`
   margin-bottom: 10px;
 `;
 
+const SubmitButton = styled.button`
+  font-size: 14px;
+  display: block;
+  margin-bottom: 10px;
+  border-radius: 0;
+  padding: 10px;
+
+  &:focus {
+    outline: 0;
+  }
+`;
+
 function AddItem() {
   return (
     <Wrapper>
@@ -143,9 +155,9 @@ function AddItem() {
               )}
             />
             <ErrorMessage name="photo" component="div" />
-            <button type="submit">
+            <SubmitButton type="submit">
               add item!
-            </button>
+            </SubmitButton>
           </Form>
         )}
       />
