@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import React from "react";
+import styled from "styled-components";
+import { Formik, Field, Form, ErrorMessage } from "formik";
 
 const Wrapper = styled.div`
   width: 375px;
@@ -51,17 +51,17 @@ function AddItem() {
       <FormHeader>add item</FormHeader>
       <Formik
         initialValues={{
-          description: '',
-          categories: '',
-          model: '',
-          link: '',
+          description: "",
+          categories: "",
+          model: "",
+          link: "",
           count: 1,
           spark: 2,
-          locations: '',
-          notes: '',
+          locations: "",
+          notes: "",
           itemValue: 0,
-          tags: '',
-          photo: ''
+          tags: "",
+          photo: ""
         }}
         onSubmit={() => {
           // call REST API here
@@ -71,7 +71,11 @@ function AddItem() {
             <Field
               name="description"
               render={({ field }) => (
-                <ItemField {...field} type="text" placeholder="new item description" />
+                <ItemField
+                  {...field}
+                  type="text"
+                  placeholder="new item description"
+                />
               )}
             />
             <ErrorMessage name="description" component="div" />
@@ -150,14 +154,10 @@ function AddItem() {
             <ErrorMessage name="tags" component="div" />
             <Field
               name="photo"
-              render={({ field }) => (
-                <ItemField {...field} type="file" />
-              )}
+              render={({ field }) => <ItemField {...field} type="file" />}
             />
             <ErrorMessage name="photo" component="div" />
-            <SubmitButton type="submit">
-              add item!
-            </SubmitButton>
+            <SubmitButton type="submit">add item!</SubmitButton>
           </Form>
         )}
       />

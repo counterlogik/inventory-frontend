@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 import AddItem from "./components/AddItem";
 
 const Container = styled.div`
@@ -16,14 +16,11 @@ const Header = styled.header`
   color: white;
 `;
 
-
 function App() {
   return (
     <Container>
       <Header>
-        <h3>
-          inventory
-        </h3>
+        <h3>inventory</h3>
       </Header>
       <AddItem />
     </Container>

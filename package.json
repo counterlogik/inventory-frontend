@@ -13,7 +13,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "fix-code": "prettier-eslint --write 'src/**/*.{js,jsx}' ",
+    "fix-styles": "prettier-stylelint --write 'src/**/*.{css,scss}' "
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -31,6 +33,7 @@
     ]
   },
   "devDependencies": {
+    "prettier-eslint-cli": "^5.0.0",
     "stylelint-config-standard": "^18.3.0"
   },
   "stylelint": {
