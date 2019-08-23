@@ -13,6 +13,10 @@ const ItemDetails = styled.ul`
   list-style: none;
   margin: 10px auto;
   padding: 20px;
+
+  li {
+    font-size: 10px;
+  }
 `;
 
 const ItemDetail = styled.li`
@@ -25,8 +29,20 @@ const ItemDetail = styled.li`
     margin: 0 0 10px;
   }
 
-  p {
+  span {
     font-size: 10px;
+  }
+
+  span + span {
+    position: relative;
+    margin-left: 20px;
+
+    &::before {
+      content: " | ";
+      position: absolute;
+      top: 0;
+      left: -12px;
+    }
   }
 `;
 
@@ -48,39 +64,47 @@ function Item({ itemId }) {
     getItem();
   }, [itemId]);
 
-  function Details({ id, desc, spark, categories, locations, tags, model, link, notes }) {
+  function Details({ description, model, categories, locations, spark, count, monetaryValue, link, notes, tags }) {
     return (
       <ItemDetails>
         <ItemDetail>
-          <h6>{desc}</h6>
+          <h6>{description}</h6>
         </ItemDetail>
 
         <ItemDetail>
-          <p>{spark}</p>
+          {model}
         </ItemDetail>
 
         <ItemDetail>
-          <p>{categories}</p>
+          {categories.map(category => <span key={category[0]}>{category[1]}</span>)}
         </ItemDetail>
 
         <ItemDetail>
-          <p>{locations}</p>
+          {locations.map(location => <span key={location[0]}>{location[1]}</span>)}
         </ItemDetail>
 
         <ItemDetail>
-          <p>{tags}</p>
+          {spark}
         </ItemDetail>
 
         <ItemDetail>
-          <p>{model}</p>
+          {count}
         </ItemDetail>
 
         <ItemDetail>
-          <p>{link}</p>
+          {monetaryValue}
         </ItemDetail>
 
         <ItemDetail>
-          <p>{notes}</p>
+          {link}
+        </ItemDetail>
+
+        <ItemDetail>
+          {notes}
+        </ItemDetail>
+
+        <ItemDetail>
+          {tags.map(tag => <span>{tag}</span>)}
         </ItemDetail>
       </ItemDetails>
     );
@@ -93,15 +117,16 @@ function Item({ itemId }) {
           ? <p>There was an error trying to get the item (id: { itemId }). Please try again later.</p>
           : Object.keys(item).length
             ? <Details
-                id={ itemId }
-                desc={item.description}
-                spark={item.spark}
-                categories={item.categories}
-                locations={item.locations}
-                tags={item.tags}
+                description={item.description}
                 model={item.model}
+                categories={[...item.categories.map(({ _id, name }) => [_id, name])]}
+                locations={[...item.locations.map(({ _id, name }) => [_id, name])]}
+                spark={item.spark}
+                count={item.count}
+                monetaryValue={item.monetaryValue}
                 link={item.link}
                 notes={item.notes}
+                tags={item.tags}
               />
             : <ItemDetail><p>There are no details for this item.</p></ItemDetail>
       }
