@@ -42,9 +42,9 @@ function AddItem() {
             <ErrorMessage name="categories" component="div" />
             <Field name="model" placeholder="model" />
             <ErrorMessage name="model" component="div" />
-            <Field name="link" placeholder="link" />
+            <Field type="url" name="link" placeholder="link" />
             <ErrorMessage name="link" component="div" />
-            <Field name="count" placeholder="count" />
+            <Field type="number" name="count" placeholder="count" />
             <ErrorMessage name="count" component="div" />
             <Field component="select" name="spark" >
               <option value="0">lose</option>
@@ -55,13 +55,13 @@ function AddItem() {
             <ErrorMessage name="spark" component="div" />
             <Field name="locations" placeholder="locations" />
             <ErrorMessage name="locations" component="div" />
-            <Field name="notes" placeholder="notes" />
+            <Field type="textarea" name="notes" placeholder="notes" />
             <ErrorMessage name="notes" component="div" />
             <Field name="itemValue" placeholder="itemValue" />
             <ErrorMessage name="itemValue" component="div" />
             <Field name="tags" placeholder="tags" />
             <ErrorMessage name="tags" component="div" />
-            <Field name="photo" placeholder="photo" />
+            <Field type="file" name="photo" placeholder="photo" />
             <ErrorMessage name="photo" component="div" />
             <button type="submit">
               add item!
