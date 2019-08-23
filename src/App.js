@@ -3,9 +3,10 @@ import { Router, Link } from "@reach/router";
 import styled from "styled-components";
 import AddItem from "./components/AddItem";
 import ItemsList from "./components/ItemsList";
+import Item from "./components/Item";
 
 const Container = styled.div`
-  text-align: center;
+  margin: 20px;
 `;
 
 const Header = styled.header`
@@ -35,6 +36,7 @@ function App() {
       <Router>
         <ItemsList path="/" />
         <AddItem path="/add-item" />
+        <Item path="/item/:itemId" />
       </Router>
     </Container>
   );

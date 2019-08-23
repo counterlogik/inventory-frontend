@@ -4,7 +4,6 @@ import axios from 'axios';
 
 const ListItems = styled.ul`
   list-style: none;
-  text-align: left;
   width: 375px;
   margin: 20px auto;
   padding: 40px;
