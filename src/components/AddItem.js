@@ -27,6 +27,12 @@ const ItemSelectField = styled.select`
   margin-bottom: 10px;
 `;
 
+const ItemTextareaField = styled.textarea`
+  font-size: 14px;
+  display: block;
+  margin-bottom: 10px;
+`;
+
 function AddItem() {
   return (
     <Wrapper>
@@ -40,7 +46,7 @@ function AddItem() {
           count: 1,
           spark: 2,
           locations: '',
-          notes: '',
+          notes: '... item notes here ...',
           itemValue: 0,
           tags: '',
           photo: ''
@@ -86,10 +92,9 @@ function AddItem() {
             />
             <ErrorMessage name="count" component="div" />
             <Field
-              component="select"
               name="spark"
-              render={() => (
-                <ItemSelectField>
+              render={({ field }) => (
+                <ItemSelectField {...field}>
                   <option value="0">lose</option>
                   <option value="1">like</option>
                   <option value="2">love</option>
@@ -108,7 +113,12 @@ function AddItem() {
             <Field
               name="notes"
               render={({ field }) => (
-                <ItemField {...field} type="textarea" placeholder="items notes here..." />
+                <ItemTextareaField
+                  {...field}
+                  rows="4"
+                  cols="20"
+                  maxlength="1024"
+                />
               )}
             />
             <ErrorMessage name="notes" component="div" />
