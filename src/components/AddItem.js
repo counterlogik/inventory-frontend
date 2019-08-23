@@ -58,7 +58,7 @@ function AddItem() {
           count: 1,
           spark: 2,
           locations: '',
-          notes: '... item notes here ...',
+          notes: '',
           itemValue: 0,
           tags: '',
           photo: ''
