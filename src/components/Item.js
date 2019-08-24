@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from 'axios';
+import axios from "axios";
 
 const Container = styled.div`
   width: 375px;
@@ -64,47 +64,52 @@ function Item({ itemId }) {
     getItem();
   }, [itemId]);
 
-  function Details({ description, model, categories, locations, spark, count, monetaryValue, link, notes, tags }) {
+  function Details({
+    description,
+    model,
+    categories,
+    locations,
+    spark,
+    count,
+    monetaryValue,
+    link,
+    notes,
+    tags
+  }) {
     return (
       <ItemDetails>
         <ItemDetail>
           <h6>{description}</h6>
         </ItemDetail>
 
+        <ItemDetail>{model}</ItemDetail>
+
         <ItemDetail>
-          {model}
+          {categories.map(category => (
+            <span key={category[0]}>{category[1]}</span>
+          ))}
         </ItemDetail>
 
         <ItemDetail>
-          {categories.map(category => <span key={category[0]}>{category[1]}</span>)}
+          {locations.map(location => (
+            <span key={location[0]}>{location[1]}</span>
+          ))}
         </ItemDetail>
 
-        <ItemDetail>
-          {locations.map(location => <span key={location[0]}>{location[1]}</span>)}
-        </ItemDetail>
+        <ItemDetail>{spark}</ItemDetail>
+
+        <ItemDetail>{count}</ItemDetail>
+
+        <ItemDetail>{monetaryValue}</ItemDetail>
+
+        <ItemDetail>{link}</ItemDetail>
+
+        <ItemDetail>{notes}</ItemDetail>
 
         <ItemDetail>
-          {spark}
-        </ItemDetail>
-
-        <ItemDetail>
-          {count}
-        </ItemDetail>
-
-        <ItemDetail>
-          {monetaryValue}
-        </ItemDetail>
-
-        <ItemDetail>
-          {link}
-        </ItemDetail>
-
-        <ItemDetail>
-          {notes}
-        </ItemDetail>
-
-        <ItemDetail>
-          {tags.map(tag => <span>{tag}</span>)}
+          {tags.map(tag => (
+            <span>{tag}</span>
+          ))}
         </ItemDetail>
       </ItemDetails>
     );
@@ -112,24 +117,29 @@ function Item({ itemId }) {
 
   return (
     <Container>
-      {
-        hasError
-          ? <p>There was an error trying to get the item (id: { itemId }). Please try again later.</p>
-          : Object.keys(item).length
-            ? <Details
-                description={item.description}
-                model={item.model}
-                categories={[...item.categories.map(({ _id, name }) => [_id, name])]}
-                locations={[...item.locations.map(({ _id, name }) => [_id, name])]}
-                spark={item.spark}
-                count={item.count}
-                monetaryValue={item.monetaryValue}
-                link={item.link}
-                notes={item.notes}
-                tags={item.tags}
-              />
-            : <ItemDetail><p>There are no details for this item.</p></ItemDetail>
-      }
+      {hasError ? (
+        <p>
+          There was an error trying to get the item (id: {itemId}). Please try
+          again later.
+        </p>
+      ) : Object.keys(item).length ? (
+        <Details
+          description={item.description}
+          model={item.model}
+          categories={[...item.categories.map(({ _id, name }) => [_id, name])]}
+          locations={[...item.locations.map(({ _id, name }) => [_id, name])]}
+          spark={item.spark}
+          count={item.count}
+          monetaryValue={item.monetaryValue}
+          link={item.link}
+          notes={item.notes}
+          tags={item.tags}
+        />
+      ) : (
+        <ItemDetail>
+          <p>There are no details for this item.</p>
+        </ItemDetail>
+      )}
     </Container>
   );
 }

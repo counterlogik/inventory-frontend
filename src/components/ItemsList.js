@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import axios from 'axios';
+import axios from "axios";
 
 const ListItems = styled.ul`
   list-style: none;
@@ -32,16 +32,16 @@ function ItemsList() {
     return <li>{props.value}</li>;
   }
 
-  return (
-    hasError
-      ? <p>There was an error trying to get your items. Please try again later.</p>
-      : <ListItems>
-        {
-          items.length
-            ? items.map((item) => <ListItem key={item._id} value={item.description} />)
-            : <li>You don't have any items yet. Please add some.</li>
-        }
-      </ListItems>
+  return hasError ? (
+    <p>There was an error trying to get your items. Please try again later.</p>
+  ) : (
+    <ListItems>
+      {items.length ? (
+        items.map(item => <ListItem key={item._id} value={item.description} />)
+      ) : (
+        <li>You don't have any items yet. Please add some.</li>
+      )}
+    </ListItems>
   );
 }
 
