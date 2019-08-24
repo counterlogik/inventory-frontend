@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { navigate } from "@reach/router"
 import styled from "styled-components";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import axios from "axios";
+import qs from "qs";
 
 const Wrapper = styled.div`
   width: 375px;
@@ -39,6 +41,8 @@ const SubmitButton = styled.button`
   display: block;
   margin-bottom: 10px;
   border-radius: 0;
+
+
   padding: 10px;
 
   &:focus {
@@ -47,9 +51,6 @@ const SubmitButton = styled.button`
 `;
 
 function AddItem() {
-  const [hasError, setErrors] = useState(false);
-  const [item, setItem] = useState({});
-
   return (
     <Wrapper>
       <FormHeader>add item</FormHeader>
@@ -67,10 +68,16 @@ function AddItem() {
           tags: []
         }}
         onSubmit={values => {
-          // call REST API here
-          setTimeout(() => {
-            console.log(JSON.stringify(values, null, 2));
-          }, 500);
+          axios({
+            method: "POST",
+            url: `http://localhost:7777/api/item/create`,
+            responseType: "json",
+            headers: { "content-type": "application/x-www-form-urlencoded" },
+            data: qs.stringify(values)
+          })
+            .then(res => navigate(`/item/${res.data._id}`))
+            .catch(err => console.log(err));
+
         }}
         render={() => (
           <Form>
