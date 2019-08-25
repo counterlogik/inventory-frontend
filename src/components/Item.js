@@ -83,6 +83,8 @@ function Item({ itemId }) {
         .catch(err => setErrors(err));
     }
 
+    console.log("effect called");
+
     if(itemId) {
       getItem();
     } else {
@@ -104,7 +106,7 @@ function Item({ itemId }) {
               : <Field
                   name={props.detailName}
                   render={({ field }) => (
-                    <input {...field} />
+                    <input {...field} value={field.value || ""} type="text" />
                   )}
                 />
         }
@@ -132,39 +134,35 @@ function Item({ itemId }) {
 
   function Details(props) {
     const { underEdit, ...item } = props;
-    let itemChecked;
-    if(!isNew) {
-      itemChecked = item;
-    }
 
     return (
-      <ToggleableForm underEdit={underEdit} item={itemChecked}>
-        <Detail underEdit={underEdit} detailName="description" detailValue={!isNew && itemChecked.description} />
+      <ToggleableForm underEdit={underEdit} item={item}>
+        <Detail underEdit={underEdit} detailName="description" detailValue={!isNew && item.description} />
 
-        <Detail underEdit={underEdit} detailName="model" detailValue={!isNew && itemChecked.model} />
+        <Detail underEdit={underEdit} detailName="model" detailValue={!isNew && item.model} />
 
         <Detail underEdit={underEdit}
-          detailName="categories" detailValue={!isNew && itemChecked.categories && itemChecked.categories.length && [...itemChecked.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          detailName="categories" detailValue={!isNew && item.categories && item.categories.length && [...item.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
           editable={true}
         />
 
         <Detail underEdit={underEdit}
-          detailName="locations" detailValue={!isNew && itemChecked.locations && itemChecked.locations.length && [...itemChecked.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          detailName="locations" detailValue={!isNew && item.locations && item.locations.length && [...item.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
           editable={true}
         />
 
-        <Detail underEdit={underEdit} detailName="spark" detailType="select" detailValue={!isNew && itemChecked.spark} />
+        <Detail underEdit={underEdit} detailName="spark" detailType="select" detailValue={!isNew && item.spark} />
 
-        <Detail underEdit={underEdit} detailName="count" detailType="number" detailValue={!isNew && itemChecked.count} />
+        <Detail underEdit={underEdit} detailName="count" detailType="number" detailValue={!isNew && item.count} />
 
-        <Detail underEdit={underEdit} detailName="monetaryValue" detailType="number" detailValue={!isNew && itemChecked.monetaryValue} />
+        <Detail underEdit={underEdit} detailName="monetaryValue" detailType="number" detailValue={!isNew && item.monetaryValue} />
 
-        <Detail underEdit={underEdit} detailName="link" detailType="url" detailValue={!isNew && itemChecked.link} />
+        <Detail underEdit={underEdit} detailName="link" detailType="url" detailValue={!isNew && item.link} />
 
-        <Detail underEdit={underEdit} detailName="notes" detailType="textarea" detailValue={!isNew && itemChecked.notes} />
+        <Detail underEdit={underEdit} detailName="notes" detailType="textarea" detailValue={!isNew && item.notes} />
 
         <Detail underEdit={underEdit}
-          detailName="tags" detailValue={!isNew && itemChecked.tags && itemChecked.tags.length && itemChecked.tags.map(tag => (<span>{tag}</span>))}
+          detailName="tags" detailValue={!isNew && item.tags && item.tags.length && item.tags.map(tag => (<span>{tag}</span>))}
           editable={true}
         />
       </ToggleableForm>
@@ -173,10 +171,6 @@ function Item({ itemId }) {
 
   function doSubmit(values) {
     if(isNew) {
-      console.log("make the create call");
-
-      console.log("CALL VALUES: ", values);
-
       axios({
         method: "POST",
         url: `http://localhost:7777/api/item/create`,
@@ -184,16 +178,34 @@ function Item({ itemId }) {
         headers: { "content-type": "application/x-www-form-urlencoded" },
         data: qs.stringify(values)
       })
-        .then(res => navigate(`/item/${res.data._id}`))
+        .then(res => {
+          console.log("SET UNDER EDIT TO FALSE");
+          setItem({ ...res.data });
+          setIsNew(false)
+          setUnderEdit(false);
+        })
         .catch(err => console.log(err));
+
+
 
     } else {
       console.log("make the update call");
 
       // coming soon
+      axios({
+        method: "POST",
+        url: `http://localhost:7777/api/item/update`,
+        responseType: "json",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        data: qs.stringify(values)
+      })
+        .then(res => navigate(`/item/${res.data._id}`))
+        .catch(err => console.log(err));
+
+      setUnderEdit(false);
     }
 
-    setUnderEdit(false);
+
   }
 
   return (
