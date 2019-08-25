@@ -50,7 +50,7 @@ function App() {
       </Header>
       <Router>
         <ItemsList path="/" />
-        <AddItem path="/add-item" />
+        <Item path="/item/add" />
         <Item path="/item/:itemId" />
       </Router>
     </Container>

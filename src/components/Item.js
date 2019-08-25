@@ -21,7 +21,7 @@ const ItemDetails = styled.ul`
   }
 `;
 
-const ToggleButton = styled.button`
+const EditSaveToggle = styled.button`
   border: 0;
   background-color: #80BEAF;
   color: #F9F9F9;
@@ -57,6 +57,7 @@ const ItemDetail = styled.li`
 function Item({ itemId }) {
   const [hasError, setErrors] = useState(false);
   const [underEdit, setUnderEdit] = useState(false);
+  const [isNew, setIsNew] = useState(itemId ? false : true);
   const [item, setItem] = useState({});
 
   useEffect(() => {
@@ -70,45 +71,68 @@ function Item({ itemId }) {
         .catch(err => setErrors(err));
     }
 
-    getItem();
+    if(itemId) {
+      getItem();
+    } else {
+      setUnderEdit(true);
+    }
+
   }, [itemId]);
 
   function Detail(props) {
     const { underEdit } = props;
 
+    console.log(props);
+
     return (
       <ItemDetail>
         {
           !underEdit
-            ? props.default
-            : props.dynamic
+            ? props.readable !== 0 && props.readable
+            : props.editable
         }
       </ItemDetail>
     );
   }
 
   function doSubmitOnToggle(values) {
-    console.log(values);
-    doHandleToggleClick();
+    doHandleToggle();
   }
 
   function ToggleableForm(props) {
     const { ...item } = props.item;
 
+    let initialValues = {
+      description: item.description,
+      model: "",
+      categories: [],
+      locations: [],
+      spark: 2,
+      count: 1,
+      monetaryValue: 0,
+      link: "",
+      notes: [],
+      tags: []
+    };
+
+    if(!isNew) {
+      initialValues = {
+        description: item.description,
+        model: item.model,
+        categories: item.categories,
+        locations: item.locations,
+        spark: item.spark,
+        count: item.count,
+        monetaryValue: item.monetaryValue,
+        link: item.link,
+        notes: item.notes,
+        tags: item.tags
+      };
+    }
+
     return (underEdit
       ? <Formik
-          initalValues={{
-            description: item.description,
-            model: "",
-            categories: [],
-            locations: [],
-            spark: 2,
-            count: 1,
-            monetaryValue: 0,
-            link: "",
-            notes: [],
-            tags: []
-          }}
+          initalValues={initialValues}
           onSubmit={doSubmitOnToggle}
           render={() => (
             <Form>
@@ -121,48 +145,54 @@ function Item({ itemId }) {
   }
 
   function Details(props) {
-    console.log(props);
     const { underEdit, ...item } = props;
+    let itemChecked;
+    if(!isNew) {
+      itemChecked = item;
+    }
+
+    console.log("BEFORE: ", itemChecked);
 
     return (
-      <ToggleableForm underEdit={underEdit} item={item}>
-        <Detail underEdit={underEdit} default={<h6>{item.description}</h6>} dynamic={item.description} />
+      <ToggleableForm underEdit={underEdit} item={itemChecked}>
+        <Detail underEdit={underEdit} readable={itemChecked && <h6>{itemChecked.description}</h6>} editable={itemChecked && <h6>{itemChecked.description}</h6>} />
 
-        <Detail underEdit={underEdit} default={item.model} dynamic={item.model} />
+        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.model} editable={itemChecked && itemChecked.model} />
 
         <Detail underEdit={underEdit}
-          default={[...item.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
-          dynamic="INPUT CHIPS (CATEGORIES)"
+          readable={itemChecked && itemChecked.categories && itemChecked.categories.length && [...itemChecked.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          editable="INPUT CHIPS (CATEGORIES)"
         />
 
         <Detail underEdit={underEdit}
-          default={[...item.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
-          dynamic="INPUT CHIPS (LOCATIONS)"
+          readable={itemChecked && itemChecked.locations && itemChecked.locations.length && [...itemChecked.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          editable="INPUT CHIPS (LOCATIONS)"
         />
 
-        <Detail underEdit={underEdit} default={item.spark} dynamic={item.spark} />
+        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.spark} editable={itemChecked && itemChecked.spark} />
 
-        <Detail underEdit={underEdit} default={item.count} dynamic={item.count} />
+        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.count} editable={itemChecked && itemChecked.count} />
 
-        <Detail underEdit={underEdit} default={item.monetaryValue} dynamic={item.monetaryValue} />
+        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.monetaryValue} editable={itemChecked && itemChecked.monetaryValue} />
 
-        <Detail underEdit={underEdit} default={item.link} dynamic={item.link} />
+        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.link} editable={itemChecked && itemChecked.link} />
 
-        <Detail underEdit={underEdit} default={item.notes} dynamic={item.notes} />
+        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.notes} editable={itemChecked && itemChecked.notes} />
 
         <Detail underEdit={underEdit}
-          default={item.tags.map(tag => (<span>{tag}</span>))}
-          dynamic="INPUT CHIPS (TAGS)"
+          readable={itemChecked && itemChecked.tags && itemChecked.tags.length && itemChecked.tags.map(tag => (<span>{tag}</span>))}
+          editable="INPUT CHIPS (TAGS)"
         />
 
       </ToggleableForm>
     );
   }
 
-  function doHandleToggleClick() {
-    if(underEdit) {
-      // http
-      console.log("make the call");
+  function doHandleToggle() {
+    if(isNew) {
+      console.log("make the create call");
+    } else if(underEdit) {
+      console.log("make the update call");
     }
 
     setUnderEdit(!underEdit);
@@ -175,22 +205,14 @@ function Item({ itemId }) {
           There was an error trying to get the item (id: {itemId}). Please try
           again later.
         </p>
-      ) : Object.keys(item).length ? (
-        <ItemDetails>
-          {
-            underEdit
-              ? <Details underEdit={underEdit} {...item} />
-              : <Details {...item} />
-          }
-        </ItemDetails>
       ) : (
-        <ItemDetail>
-          <p>There are no details for this item.</p>
-        </ItemDetail>
+        <ItemDetails>
+          <Details underEdit={underEdit} {...item} />
+          <EditSaveToggle onClick={doHandleToggle}>
+            {underEdit ? "SAVE" : "EDIT"}
+          </EditSaveToggle>
+        </ItemDetails>
       )}
-      <ToggleButton onClick={doHandleToggleClick} className={underEdit ? "editing" : ""}>
-        {underEdit ? "DONE" : "EDIT"}
-      </ToggleButton>
     </Container>
   );
 }
