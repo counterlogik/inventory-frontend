@@ -85,15 +85,11 @@ function Item({ itemId }) {
         <ItemDetail>{model}</ItemDetail>
 
         <ItemDetail>
-          {categories.map(category => (
-            <span key={category[0]}>{category[1]}</span>
-          ))}
+          {[...categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
         </ItemDetail>
 
         <ItemDetail>
-          {locations.map(location => (
-            <span key={location[0]}>{location[1]}</span>
-          ))}
+          {[...locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
         </ItemDetail>
 
         <ItemDetail>{spark}</ItemDetail>
@@ -123,23 +119,12 @@ function Item({ itemId }) {
           again later.
         </p>
       ) : Object.keys(item).length ? (
-        <Details
-          description={item.description}
-          model={item.model}
-          categories={[...item.categories.map(({ _id, name }) => [_id, name])]}
-          locations={[...item.locations.map(({ _id, name }) => [_id, name])]}
-          spark={item.spark}
-          count={item.count}
-          monetaryValue={item.monetaryValue}
-          link={item.link}
-          notes={item.notes}
-          tags={item.tags}
-        />
+        <Details {...item} />
       ) : (
-        <ItemDetail>
-          <p>There are no details for this item.</p>
-        </ItemDetail>
-      )}
+            <ItemDetail>
+              <p>There are no details for this item.</p>
+            </ItemDetail>
+          )}
     </Container>
   );
 }
