@@ -6,7 +6,7 @@ import ItemsList from "./components/ItemsList";
 import Item from "./components/Item";
 
 const Container = styled.div`
-  margin: 20px;
+  height: 100px;
 `;
 
 const Header = styled.header`
@@ -15,8 +15,23 @@ const Header = styled.header`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  font-size: 16px;
   color: white;
+  padding: 10px;
+
+  h3 {
+    margin: 0 0 10px 0;
+  }
+
+  ul {
+    display: flex;
+    padding: 0;
+    list-style: none;
+
+    li:not(:last-child) {
+      margin-right: 20px;
+    }
+  }
 `;
 
 function App() {

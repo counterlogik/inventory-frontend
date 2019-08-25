@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { navigate } from "@reach/router"
 import styled from "styled-components";
 import { Formik, Field, Form, ErrorMessage } from "formik";
@@ -91,28 +91,24 @@ function AddItem() {
                 />
               )}
             />
-            <ErrorMessage name="description" component="div" />
             <Field
               name="model"
               render={({ field }) => (
                 <ItemField {...field} type="text" placeholder="model" />
               )}
             />
-            <ErrorMessage name="model" component="div" />
             <Field
               name="categories"
               render={({ field }) => (
                 <ItemField {...field} type="text" placeholder="categories" />
               )}
             />
-            <ErrorMessage name="categories" component="div" />
             <Field
               name="locations"
               render={({ field }) => (
                 <ItemField {...field} type="text" placeholder="locations" />
               )}
             />
-            <ErrorMessage name="locations" component="div" />
             <Field
               name="spark"
               render={({ field }) => (
@@ -124,28 +120,24 @@ function AddItem() {
                 </ItemSelectField>
               )}
             />
-            <ErrorMessage name="spark" component="div" />
             <Field
               name="count"
               render={({ field }) => (
                 <ItemField {...field} type="number" placeholder="count" />
               )}
             />
-            <ErrorMessage name="count" component="div" />
             <Field
               name="monetaryValue"
               render={({ field }) => (
                 <ItemField {...field} type="number" placeholder="0" />
               )}
             />
-            <ErrorMessage name="monetaryValue" component="div" />
             <Field
               name="link"
               render={({ field }) => (
                 <ItemField {...field} type="url" placeholder="link" />
               )}
             />
-            <ErrorMessage name="link" component="div" />
             <Field
               name="notes"
               render={({ field }) => (
@@ -157,19 +149,16 @@ function AddItem() {
                 />
               )}
             />
-            <ErrorMessage name="notes" component="div" />
             <Field
               name="tags"
               render={({ field }) => (
                 <ItemField {...field} type="text" placeholder="tags" />
               )}
             />
-            <ErrorMessage name="tags" component="div" />
             <Field
               name="image"
               render={({ field }) => <ItemField {...field} type="file" />}
             />
-            <ErrorMessage name="image" component="div" />
             <SubmitButton type="submit">add item!</SubmitButton>
           </Form>
         )}

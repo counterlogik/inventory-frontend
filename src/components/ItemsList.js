@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "@reach/router"
 import styled from "styled-components";
 import axios from "axios";
 
@@ -28,8 +29,10 @@ function ItemsList() {
     getItems();
   }, []);
 
-  function ListItem(props) {
-    return <li>{props.value}</li>;
+  function ListItem({ id, description }) {
+    return( <li>
+      <Link to={`/item/${id}/`}>{description}</Link>
+    </li>);
   }
 
   return hasError ? (
@@ -37,7 +40,7 @@ function ItemsList() {
   ) : (
     <ListItems>
       {items.length ? (
-        items.map(item => <ListItem key={item._id} value={item.description} />)
+        items.map(item => <ListItem key={item._id} id={item._id} description={item.description} />)
       ) : (
         <li>You don't have any items yet. Please add some.</li>
       )}
