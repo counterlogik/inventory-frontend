@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import { Formik, Field, Form } from "formik";
 import axios from "axios";
+import qs from "qs";
 
 const Container = styled.div`
   width: 375px;
@@ -48,6 +50,7 @@ const ItemDetail = styled.li`
 
 function Item({ itemId }) {
   const [hasError, setErrors] = useState(false);
+  const [underEdit, setUnderEdit] = useState(false);
   const [item, setItem] = useState({});
 
   useEffect(() => {
@@ -64,49 +67,55 @@ function Item({ itemId }) {
     getItem();
   }, [itemId]);
 
-  function Details({
-    description,
-    model,
-    categories,
-    locations,
-    spark,
-    count,
-    monetaryValue,
-    link,
-    notes,
-    tags
-  }) {
+  function StaticDetails(props) {
     return (
-      <ItemDetails>
+      <>
         <ItemDetail>
-          <h6>{description}</h6>
+          <h6>{props.description}</h6>
         </ItemDetail>
 
-        <ItemDetail>{model}</ItemDetail>
+        <ItemDetail>{props.model}</ItemDetail>
 
         <ItemDetail>
-          {[...categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          {[...props.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
         </ItemDetail>
 
         <ItemDetail>
-          {[...locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          {[...props.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
         </ItemDetail>
 
-        <ItemDetail>{spark}</ItemDetail>
+        <ItemDetail>{props.spark}</ItemDetail>
 
-        <ItemDetail>{count}</ItemDetail>
+        <ItemDetail>{props.count}</ItemDetail>
 
-        <ItemDetail>{monetaryValue}</ItemDetail>
+        <ItemDetail>{props.monetaryValue}</ItemDetail>
 
-        <ItemDetail>{link}</ItemDetail>
+        <ItemDetail>{props.link}</ItemDetail>
 
-        <ItemDetail>{notes}</ItemDetail>
+        <ItemDetail>{props.notes}</ItemDetail>
 
         <ItemDetail>
-          {tags.map(tag => (
+          {props.tags.map(tag => (
             <span>{tag}</span>
           ))}
         </ItemDetail>
+      </>
+    );
+  }
+
+  function Details(props) {
+    console.log(props);
+    const { underEdit, ...others } = props;
+
+    return (
+      <ItemDetails>
+        {
+          underEdit
+            ? <Formik>
+              TEST
+            </Formik>
+            : <StaticDetails {...others} />
+        }
       </ItemDetails>
     );
   }
@@ -119,12 +128,12 @@ function Item({ itemId }) {
           again later.
         </p>
       ) : Object.keys(item).length ? (
-        <Details {...item} />
+        <Details underEdit={underEdit} {...item} />
       ) : (
-            <ItemDetail>
-              <p>There are no details for this item.</p>
-            </ItemDetail>
-          )}
+        <ItemDetail>
+          <p>There are no details for this item.</p>
+        </ItemDetail>
+      )}
     </Container>
   );
 }
