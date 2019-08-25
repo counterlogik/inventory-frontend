@@ -183,6 +183,7 @@ function Item({ itemId }) {
           setItem({ ...res.data });
           setIsNew(false)
           setUnderEdit(false);
+          navigate(`/item/${res.data._id}`);
         })
         .catch(err => console.log(err));
 
@@ -219,7 +220,7 @@ function Item({ itemId }) {
         <ItemDetails>
           <Details underEdit={underEdit} {...item} />
           {
-            !underEdit && <EditSaveToggle onClick={setUnderEdit(true)}>EDIT</EditSaveToggle>
+            !underEdit && <EditSaveToggle onClick={() => setUnderEdit(true)}>EDIT</EditSaveToggle>
           }
         </ItemDetails>
       )}
