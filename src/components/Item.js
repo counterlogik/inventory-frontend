@@ -55,7 +55,7 @@ const ItemDetail = styled.li`
   }
 `;
 
-function Item({ itemId }) {
+function Item({ itemId, uri }) {
   const [hasError, setErrors] = useState(false);
   const [underEdit, setUnderEdit] = useState(false);
   const [isNew, setIsNew] = useState(itemId ? false : true);
@@ -88,10 +88,28 @@ function Item({ itemId }) {
     if(itemId) {
       getItem();
     } else {
+      // reset everything if we came from an existing item
+      if(!itemId) {
+        setIsNew(true);
+        setItem({
+          description: "",
+          model: "",
+          categories: [],
+          locations: [],
+          spark: 2,
+          count: 1,
+          monetaryValue: 0,
+          link: "",
+          notes: [],
+          tags: []
+        });
+      }
+
+      // set edit mode to true regardless
       setUnderEdit(true);
     }
 
-  }, [itemId]);
+  }, [itemId, uri]);
 
   function Detail(props) {
     const { underEdit } = props;
