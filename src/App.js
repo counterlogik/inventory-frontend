@@ -44,7 +44,7 @@ function App() {
             <Link to="/">items list</Link>
           </li>
           <li>
-            <Link to="/add-item">add item</Link>
+            <Link to="/item/add">add item</Link>
           </li>
         </ul>
       </Header>

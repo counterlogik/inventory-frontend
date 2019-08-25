@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { navigate } from "@reach/router"
 import styled from "styled-components";
 import { Formik, Field, Form } from "formik";
 import axios from "axios";
@@ -58,7 +59,18 @@ function Item({ itemId }) {
   const [hasError, setErrors] = useState(false);
   const [underEdit, setUnderEdit] = useState(false);
   const [isNew, setIsNew] = useState(itemId ? false : true);
-  const [item, setItem] = useState({});
+  const [item, setItem] = useState({
+    description: "",
+    model: "",
+    categories: [],
+    locations: [],
+    spark: 2,
+    count: 1,
+    monetaryValue: 0,
+    link: "",
+    notes: [],
+    tags: []
+  });
 
   useEffect(() => {
     function getItem() {
@@ -82,61 +94,35 @@ function Item({ itemId }) {
   function Detail(props) {
     const { underEdit } = props;
 
-    console.log(props);
-
     return (
       <ItemDetail>
         {
           !underEdit
-            ? props.readable !== 0 && props.readable
+            ? props.detailValue
             : props.editable
+              ? <span>SPECIAL FIELD</span>
+              : <Field
+                  name={props.detailName}
+                  render={({ field }) => (
+                    <input {...field} />
+                  )}
+                />
         }
       </ItemDetail>
     );
   }
 
-  function doSubmitOnToggle(values) {
-    doHandleToggle();
-  }
-
   function ToggleableForm(props) {
     const { ...item } = props.item;
 
-    let initialValues = {
-      description: item.description,
-      model: "",
-      categories: [],
-      locations: [],
-      spark: 2,
-      count: 1,
-      monetaryValue: 0,
-      link: "",
-      notes: [],
-      tags: []
-    };
-
-    if(!isNew) {
-      initialValues = {
-        description: item.description,
-        model: item.model,
-        categories: item.categories,
-        locations: item.locations,
-        spark: item.spark,
-        count: item.count,
-        monetaryValue: item.monetaryValue,
-        link: item.link,
-        notes: item.notes,
-        tags: item.tags
-      };
-    }
-
     return (underEdit
       ? <Formik
-          initalValues={initialValues}
-          onSubmit={doSubmitOnToggle}
+          initialValues={item}
+          onSubmit={doSubmit}
           render={() => (
             <Form>
               {props.children}
+              <EditSaveToggle type="submit">SAVE</EditSaveToggle>
             </Form>
           )} />
       : <>
@@ -151,51 +137,63 @@ function Item({ itemId }) {
       itemChecked = item;
     }
 
-    console.log("BEFORE: ", itemChecked);
-
     return (
       <ToggleableForm underEdit={underEdit} item={itemChecked}>
-        <Detail underEdit={underEdit} readable={itemChecked && <h6>{itemChecked.description}</h6>} editable={itemChecked && <h6>{itemChecked.description}</h6>} />
+        <Detail underEdit={underEdit} detailName="description" detailValue={!isNew && itemChecked.description} />
 
-        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.model} editable={itemChecked && itemChecked.model} />
+        <Detail underEdit={underEdit} detailName="model" detailValue={!isNew && itemChecked.model} />
 
         <Detail underEdit={underEdit}
-          readable={itemChecked && itemChecked.categories && itemChecked.categories.length && [...itemChecked.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
-          editable="INPUT CHIPS (CATEGORIES)"
+          detailName="categories" detailValue={!isNew && itemChecked.categories && itemChecked.categories.length && [...itemChecked.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          editable={true}
         />
 
         <Detail underEdit={underEdit}
-          readable={itemChecked && itemChecked.locations && itemChecked.locations.length && [...itemChecked.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
-          editable="INPUT CHIPS (LOCATIONS)"
+          detailName="locations" detailValue={!isNew && itemChecked.locations && itemChecked.locations.length && [...itemChecked.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
+          editable={true}
         />
 
-        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.spark} editable={itemChecked && itemChecked.spark} />
+        <Detail underEdit={underEdit} detailName="spark" detailType="select" detailValue={!isNew && itemChecked.spark} />
 
-        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.count} editable={itemChecked && itemChecked.count} />
+        <Detail underEdit={underEdit} detailName="count" detailType="number" detailValue={!isNew && itemChecked.count} />
 
-        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.monetaryValue} editable={itemChecked && itemChecked.monetaryValue} />
+        <Detail underEdit={underEdit} detailName="monetaryValue" detailType="number" detailValue={!isNew && itemChecked.monetaryValue} />
 
-        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.link} editable={itemChecked && itemChecked.link} />
+        <Detail underEdit={underEdit} detailName="link" detailType="url" detailValue={!isNew && itemChecked.link} />
 
-        <Detail underEdit={underEdit} readable={itemChecked && itemChecked.notes} editable={itemChecked && itemChecked.notes} />
+        <Detail underEdit={underEdit} detailName="notes" detailType="textarea" detailValue={!isNew && itemChecked.notes} />
 
         <Detail underEdit={underEdit}
-          readable={itemChecked && itemChecked.tags && itemChecked.tags.length && itemChecked.tags.map(tag => (<span>{tag}</span>))}
-          editable="INPUT CHIPS (TAGS)"
+          detailName="tags" detailValue={!isNew && itemChecked.tags && itemChecked.tags.length && itemChecked.tags.map(tag => (<span>{tag}</span>))}
+          editable={true}
         />
-
       </ToggleableForm>
     );
   }
 
-  function doHandleToggle() {
+  function doSubmit(values) {
     if(isNew) {
       console.log("make the create call");
-    } else if(underEdit) {
+
+      console.log("CALL VALUES: ", values);
+
+      axios({
+        method: "POST",
+        url: `http://localhost:7777/api/item/create`,
+        responseType: "json",
+        headers: { "content-type": "application/x-www-form-urlencoded" },
+        data: qs.stringify(values)
+      })
+        .then(res => navigate(`/item/${res.data._id}`))
+        .catch(err => console.log(err));
+
+    } else {
       console.log("make the update call");
+
+      // coming soon
     }
 
-    setUnderEdit(!underEdit);
+    setUnderEdit(false);
   }
 
   return (
@@ -208,9 +206,9 @@ function Item({ itemId }) {
       ) : (
         <ItemDetails>
           <Details underEdit={underEdit} {...item} />
-          <EditSaveToggle onClick={doHandleToggle}>
-            {underEdit ? "SAVE" : "EDIT"}
-          </EditSaveToggle>
+          {
+            !underEdit && <EditSaveToggle onClick={setUnderEdit(true)}>EDIT</EditSaveToggle>
+          }
         </ItemDetails>
       )}
     </Container>

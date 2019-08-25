@@ -77,7 +77,6 @@ function AddItem() {
           })
             .then(res => navigate(`/item/${res.data._id}`))
             .catch(err => console.log(err));
-
         }}
         render={() => (
           <Form>
