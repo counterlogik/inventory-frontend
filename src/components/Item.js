@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Formik, Field, Form } from "formik";
 import axios from "axios";
 import qs from "qs";
+import { setConstantValue } from "typescript";
 
 const Container = styled.div`
   width: 375px;
@@ -71,6 +72,7 @@ function Item({ itemId, uri }) {
     notes: [],
     tags: []
   });
+  const [isSaved, setSaved] = useState(false);
 
   useEffect(() => {
     function getItem() {
@@ -188,6 +190,7 @@ function Item({ itemId, uri }) {
 
   function doSubmit(values) {
     if(isNew) {
+      // create a new Item from the user input data and then navigate to its view route
       axios({
         method: "POST",
         url: `http://localhost:7777/api/item/create`,
@@ -196,28 +199,25 @@ function Item({ itemId, uri }) {
         data: qs.stringify(values)
       })
         .then(res => {
-          console.log("SET UNDER EDIT TO FALSE");
           setItem({ ...res.data });
           setIsNew(false)
           setUnderEdit(false);
           navigate(`/item/${res.data._id}`);
         })
         .catch(err => console.log(err));
-
-
-
     } else {
-      console.log("make the update call");
-
-      // coming soon
+      // update this Item from the updated user input data and reflect changes locally
       axios({
         method: "POST",
-        url: `http://localhost:7777/api/item/update`,
+        url: `http://localhost:7777/api/item/${itemId}/update`,
         responseType: "json",
         headers: { "content-type": "application/x-www-form-urlencoded" },
         data: qs.stringify(values)
       })
-        .then(res => navigate(`/item/${res.data._id}`))
+        .then(res => {
+          console.log(values);
+          setItem({ ...values });
+        })
         .catch(err => console.log(err));
 
       setUnderEdit(false);
