@@ -1,7 +1,6 @@
 import React from "react";
 import { Router, Link } from "@reach/router";
 import styled from "styled-components";
-import AddItem from "./components/AddItem";
 import ItemsList from "./components/ItemsList";
 import Item from "./components/Item";
 

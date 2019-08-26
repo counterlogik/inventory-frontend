@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { Formik, Field, Form } from "formik";
 import axios from "axios";
 import qs from "qs";
-import { setConstantValue } from "typescript";
 
 const Container = styled.div`
   width: 375px;
@@ -56,7 +55,26 @@ const ItemDetail = styled.li`
   }
 `;
 
-function Item({ itemId, uri }) {
+const Chips = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+
+  div {
+    background-color: #616161;
+    color: #ffffff;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border-radius: 16px;
+    outline: 0;
+    padding: 0;
+    margin-right: 10px;
+  }
+`;
+
+function Item({ itemId }) {
   const [hasError, setErrors] = useState(false);
   const [underEdit, setUnderEdit] = useState(false);
   const [isNew, setIsNew] = useState(itemId ? false : true);
@@ -72,7 +90,6 @@ function Item({ itemId, uri }) {
     notes: [],
     tags: []
   });
-  const [isSaved, setSaved] = useState(false);
 
   useEffect(() => {
     function getItem() {
@@ -110,24 +127,38 @@ function Item({ itemId, uri }) {
       setUnderEdit(true);
     }
 
-  }, [itemId, uri]);
+  }, [itemId]);
 
-  function Detail(props) {
-    const { underEdit } = props;
+  function InputChip({ underEdit, _id, name }) {
+    return <div key={_id} disabled={underEdit}>{name}</div>;
+  }
 
+  function InputChips({ ...props }) {
+    return (
+      <>
+        {props.detailValue && <Chips>{[...props.detailValue.map(member => <InputChip underEdit={props.underEdit} {...member} />)]}</Chips>}
+        <Field
+          name={props.detailName}
+          render={({ field }) => (
+            <input type="hidden" {...field} />
+          )}
+        />
+      </>
+    );
+  }
+
+  function Detail({ underEdit, Custom, ...others }) {
     return (
       <ItemDetail>
         {
-          !underEdit
-            ? props.detailValue
-            : props.editable
-              ? <span>SPECIAL FIELD</span>
-              : <Field
-                  name={props.detailName}
-                  render={({ field }) => (
-                    <input {...field} value={field.value || ""} type="text" />
-                  )}
-                />
+          Custom
+            ? <Custom underEdit={underEdit} {...others} />
+            : <Field
+                name={others.detailName}
+                render={({ field, form: { isSubmitting } }) => (
+                  <input {...field} value={field.value || ""} type="text" disabled={!underEdit || isSubmitting} />
+                )}
+              />
         }
       </ItemDetail>
     );
@@ -136,23 +167,23 @@ function Item({ itemId, uri }) {
   function ToggleableForm(props) {
     const { ...item } = props.item;
 
-    return (underEdit
-      ? <Formik
-          initialValues={item}
-          onSubmit={doSubmit}
-          render={() => (
-            <Form>
-              {props.children}
-              <EditSaveToggle type="submit">SAVE</EditSaveToggle>
-            </Form>
-          )} />
-      : <>
-        {props.children}
-      </>);
+    return (
+      <Formik
+        initialValues={item}
+        onSubmit={doSubmit}
+        render={() => (
+          <Form>
+            {props.children}
+            <EditSaveToggle type="submit">{props.underEdit ? 'SAVE' : 'EDIT'}</EditSaveToggle>
+          </Form>
+        )} />
+      );
   }
 
   function Details(props) {
     const { underEdit, ...item } = props;
+
+    console.log();
 
     return (
       <ToggleableForm underEdit={underEdit} item={item}>
@@ -160,14 +191,18 @@ function Item({ itemId, uri }) {
 
         <Detail underEdit={underEdit} detailName="model" detailValue={!isNew && item.model} />
 
-        <Detail underEdit={underEdit}
-          detailName="categories" detailValue={!isNew && item.categories && item.categories.length && [...item.categories.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
-          editable={true}
+        <Detail
+          underEdit={underEdit}
+          detailName="categories"
+          detailValue={!isNew && item.categories && item.categories.length && item.categories}
+          Custom={InputChips}
         />
 
-        <Detail underEdit={underEdit}
-          detailName="locations" detailValue={!isNew && item.locations && item.locations.length && [...item.locations.map(({ _id, name }) => <span key={_id}>{name}</span>)]}
-          editable={true}
+        <Detail
+          underEdit={underEdit}
+          detailName="locations"
+          detailValue={!isNew && item.locations && item.locations.length && item.locations}
+          Custom={InputChips}
         />
 
         <Detail underEdit={underEdit} detailName="spark" detailType="select" detailValue={!isNew && item.spark} />
@@ -180,10 +215,12 @@ function Item({ itemId, uri }) {
 
         <Detail underEdit={underEdit} detailName="notes" detailType="textarea" detailValue={!isNew && item.notes} />
 
-        <Detail underEdit={underEdit}
-          detailName="tags" detailValue={!isNew && item.tags && item.tags.length && item.tags.map(tag => (<span>{tag}</span>))}
-          editable={true}
-        />
+        {/* <Detail
+          underEdit={underEdit}
+          detailName="tags"
+          detailValue={!isNew && item.tags && item.tags.length && item.tags}
+          Custom={InputChips}
+        /> */}
       </ToggleableForm>
     );
   }
@@ -205,7 +242,7 @@ function Item({ itemId, uri }) {
           navigate(`/item/${res.data._id}`);
         })
         .catch(err => console.log(err));
-    } else {
+    } else if(underEdit) {
       // update this Item from the updated user input data and reflect changes locally
       axios({
         method: "POST",
@@ -215,15 +252,15 @@ function Item({ itemId, uri }) {
         data: qs.stringify(values)
       })
         .then(res => {
-          console.log(values);
           setItem({ ...values });
         })
         .catch(err => console.log(err));
 
       setUnderEdit(false);
+    } else {
+      // if existing item then toggle should activate edit mode
+      setUnderEdit(true);
     }
-
-
   }
 
   return (
@@ -236,9 +273,6 @@ function Item({ itemId, uri }) {
       ) : (
         <ItemDetails>
           <Details underEdit={underEdit} {...item} />
-          {
-            !underEdit && <EditSaveToggle onClick={() => setUnderEdit(true)}>EDIT</EditSaveToggle>
-          }
         </ItemDetails>
       )}
     </Container>
