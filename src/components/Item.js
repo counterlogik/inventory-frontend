@@ -83,12 +83,11 @@ function Item({ itemId, uri }) {
         .catch(err => setErrors(err));
     }
 
-    console.log("effect called");
-
+    // if we are on an item route with a specific id, grab it
     if(itemId) {
       getItem();
     } else {
-      // reset everything if we came from an existing item
+      // reset everything, form etc, if we came from an existing item route
       if(!itemId) {
         setIsNew(true);
         setItem({
