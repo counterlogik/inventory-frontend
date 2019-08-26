@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Formik, Field, Form } from "formik";
 import axios from "axios";
 import qs from "qs";
+import Chip from '@material-ui/core/Chip';
 
 const Container = styled.div`
   width: 375px;
@@ -52,25 +53,6 @@ const ItemDetail = styled.li`
       top: 0;
       left: -12px;
     }
-  }
-`;
-
-const Chips = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-
-  div {
-    background-color: #616161;
-    color: #ffffff;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    border-radius: 16px;
-    outline: 0;
-    padding: 0;
-    margin-right: 10px;
   }
 `;
 
@@ -129,14 +111,20 @@ function Item({ itemId }) {
 
   }, [itemId]);
 
+  function handleDeleteChip(underEdit, id) {
+    // this should remove this item from the array
+    console.log("under edit: ", underEdit);
+    console.log("id: ", id);
+  }
+
   function InputChip({ underEdit, _id, name }) {
-    return <div key={_id} disabled={underEdit}>{name}</div>;
+    return <Chip color="secondary" size="small" onDelete={underEdit ? () => handleDeleteChip(underEdit, _id) : null} label={name} />;
   }
 
   function InputChips({ ...props }) {
     return (
       <>
-        {props.detailValue && <Chips>{[...props.detailValue.map(member => <InputChip underEdit={props.underEdit} {...member} />)]}</Chips>}
+        {props.detailValue && [...props.detailValue.map(member => <InputChip key={member._id} underEdit={props.underEdit} {...member} />)]}
         <Field
           name={props.detailName}
           render={({ field }) => (
@@ -215,12 +203,12 @@ function Item({ itemId }) {
 
         <Detail underEdit={underEdit} detailName="notes" detailType="textarea" detailValue={!isNew && item.notes} />
 
-        {/* <Detail
+        <Detail
           underEdit={underEdit}
           detailName="tags"
-          detailValue={!isNew && item.tags && item.tags.length && item.tags}
+          detailValue={!isNew && item.tags.length ? item.tags : null}
           Custom={InputChips}
-        /> */}
+        />
       </ToggleableForm>
     );
   }
