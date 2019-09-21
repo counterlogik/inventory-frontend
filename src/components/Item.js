@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { Formik, Field, Form } from "formik";
 import axios from "axios";
 import qs from "qs";
-import Chip from '@material-ui/core/Chip';
+import ChipInput from 'material-ui-chip-input';
 
 const Container = styled.div`
   width: 375px;
@@ -111,26 +111,27 @@ function Item({ itemId }) {
 
   }, [itemId]);
 
-  function handleDeleteChip(underEdit, id) {
-    // this should remove this item from the array
-    console.log("under edit: ", underEdit);
-    console.log("id: ", id);
+  function handleAddChip(chip) {
+    // this should add this item to the array
+    console.log("HANDLE ADD CHIP: ", chip);
   }
 
-  function InputChip({ underEdit, _id, name }) {
-    return <Chip color="secondary" size="small" onDelete={underEdit ? () => handleDeleteChip(underEdit, _id) : null} label={name} />;
+  function handleDeleteChip(chip, index) {
+    // this should remove this item from the array
+    console.log("HANDLE DELETE CHIP: ", chip);
+    console.log("id: ", index);
   }
 
   function InputChips({ ...props }) {
     return (
       <>
-        {props.detailValue && [...props.detailValue.map(member => <InputChip key={member._id} underEdit={props.underEdit} {...member} />)]}
-        <Field
-          name={props.detailName}
-          render={({ field }) => (
-            <input type="hidden" {...field} />
-          )}
-        />
+        {props.detailValue && [...props.detailValue.map(member => {
+          return <ChipInput
+            value={props.members}
+            onAdd={(chip) => handleAddChip(chip)}
+            onDelete={(chip, index) => handleDeleteChip(chip, index)}
+          />;
+        })]}
       </>
     );
   }
