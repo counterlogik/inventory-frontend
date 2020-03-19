@@ -5,6 +5,7 @@ import { Formik, Field, Form } from "formik";
 import axios from "axios";
 import qs from "qs";
 import ChipInput from 'material-ui-chip-input';
+import { Chip } from "@material-ui/core";
 
 const Container = styled.div`
   width: 375px;
@@ -72,6 +73,8 @@ function Item({ itemId }) {
     notes: [],
     tags: []
   });
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [locationOptions, setLocationOptions] = useState([]);
 
   useEffect(() => {
     function getItem() {
@@ -109,41 +112,70 @@ function Item({ itemId }) {
       setUnderEdit(true);
     }
 
+    axios({
+      method: "get",
+      url: `http://localhost:7777/api/autocompleteOptions`,
+      responseType: "json"
+    })
+      .then(res => {
+        setCategoryOptions([...res.data.categories]);
+        setLocationOptions([...res.data.locations]);
+      })
+      .catch(err => setErrors(err));
+
   }, [itemId]);
 
-  function handleAddChip(chip) {
-    // this should add this item to the array
-    console.log("HANDLE ADD CHIP: ", chip);
+  function handleAddChip(chipValue, detailName, detailValue) {
+    setItem({
+      ...item,
+      [detailName]: [...detailValue, { name: chipValue }]
+    })
   }
 
-  function handleDeleteChip(chip, index) {
-    // this should remove this item from the array
-    console.log("HANDLE DELETE CHIP: ", chip);
-    console.log("id: ", index);
+  function handleDeleteChip(chip, detailName, detailValue) {
+    setItem({
+      ...item,
+      [detailName]: detailValue.filter(detailMember => {
+        return detailMember.name !== chip.props.label;
+      })
+    })
   }
 
   function InputChips({ ...props }) {
-    return (
-      <>
-        {props.detailValue && [...props.detailValue.map(member => {
-          return <ChipInput
-            value={props.members}
-            onAdd={(chip) => handleAddChip(chip)}
-            onDelete={(chip, index) => handleDeleteChip(chip, index)}
-          />;
-        })]}
-      </>
-    );
+    if(props.detailValue) {
+      return (
+        <>
+          {props.underEdit
+            ?
+              <ChipInput
+                value={props.detailValue.map(detailMember => {
+                  return <Chip
+                    label={detailMember.name}
+                    clickable={false}
+                  />
+                })}
+                dataSource={props.autocompleteOptions.map(autocompleteOption => autocompleteOption.name)}
+                onAdd={(chipValue) => handleAddChip(chipValue, props.detailName, props.detailValue)}
+                onDelete={(chip) => handleDeleteChip(chip, props.detailName, props.detailValue)}
+              />
+            :
+              props.detailValue.map(detailMember => <Chip key={detailMember.name} label={detailMember.name} clickable={false} />)
+          }
+        </>
+      );
+    } else {
+      return <div />;
+    }
   }
 
-  function Detail({ underEdit, Custom, ...others }) {
+  function Detail({ underEdit, detailName, Custom, ...others }) {
     return (
       <ItemDetail>
         {
           Custom
-            ? <Custom underEdit={underEdit} {...others} />
+            ? <Custom underEdit={underEdit} detailName={detailName} {...others} />
             : <Field
-                name={others.detailName}
+                name={detailName}
                 render={({ field, form: { isSubmitting } }) => (
                   <input {...field} value={field.value || ""} type="text" disabled={!underEdit || isSubmitting} />
                 )}
@@ -172,8 +204,6 @@ function Item({ itemId }) {
   function Details(props) {
     const { underEdit, ...item } = props;
 
-    console.log();
-
     return (
       <ToggleableForm underEdit={underEdit} item={item}>
         <Detail underEdit={underEdit} detailName="description" detailValue={!isNew && item.description} />
@@ -184,6 +214,7 @@ function Item({ itemId }) {
           underEdit={underEdit}
           detailName="categories"
           detailValue={!isNew && item.categories && item.categories.length && item.categories}
+          autocompleteOptions={categoryOptions}
           Custom={InputChips}
         />
 
@@ -191,6 +222,7 @@ function Item({ itemId }) {
           underEdit={underEdit}
           detailName="locations"
           detailValue={!isNew && item.locations && item.locations.length && item.locations}
+          autocompleteOptions={locationOptions}
           Custom={InputChips}
         />
 
